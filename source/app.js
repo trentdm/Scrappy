@@ -60,7 +60,7 @@ var getItems = function(body) {
         });
 
         item.tweet = item.title.substring(0, 30) + ' - $' + item.price
-            + '\n' + item.link;
+            + '\n' + item.link + '\n';
         item.tweet += item.description.substring(0, 140 - item.tweet.length);
         items.push(item);
     });
