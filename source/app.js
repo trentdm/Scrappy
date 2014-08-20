@@ -12,7 +12,8 @@ var t = new twit({
 });
 
 var urls = [
-    config.base_path + '?nid=231&cat=186&category=184&pid=0&o_facetSelected=false'
+    config.base_path + '?nid=231&cat=186&category=184&pid=0&o_facetSelected=false',
+//    config.base_path + 'index.php?nid=231&nocache=1&search=crate+and+barrel&zip=&distance=&min_price=&max_price=&type=&x=0&y=0'
 ];
 
 var getItems = function(body) {
@@ -35,6 +36,23 @@ var getItems = function(body) {
             item.description = event;
         });
 
+        $(this).find('.adImage').each(function() {
+            var event = $(this).find('img').attr('src');
+            var normalizedPath = event === undefined  || event === '/resources/classifieds/graphics/noImage-100.gif' ? '' : event;
+            item.image = normalizedPath.replace(/\?filter.*/g, '');
+        });
+
+        $(this).find('.adTime').each(function() {
+            var event = $(this).text().trim().replace(/\s\s+/g, '').split('|')[1];
+            var timePieces = event.split(' ');
+            if(timePieces[1] === "Min")
+                item.time = new Date(new Date().getTime() - timePieces[0] * 60000);
+            else if(timePieces[1] === "Hr" || timePieces[1] === "Hrs")
+                item.time = new Date(new Date().getTime() - timePieces[0] * 60000 * 60);
+            else if(timePieces[1] === "Day" || timePieces[1] === "Days")
+                item.time = new Date(new Date().getTime() - timePieces[0] * 60000 * 60 * 24);
+        });
+
         $(this).find('.priceBox').each(function() {
             var event = $(this).text().trim().replace(/\s\s+/g, ',').replace('$', '');
             var price = parseFloat(event) / 100
@@ -42,7 +60,7 @@ var getItems = function(body) {
         });
 
         item.tweet = item.title.substring(0, 30) + ' - $' + item.price
-            + '\n' + item.link + '\n';
+            + '\n' + item.link;
         item.tweet += item.description.substring(0, 140 - item.tweet.length);
         items.push(item);
     });
@@ -51,9 +69,12 @@ var getItems = function(body) {
 }
 
 var checkItem = function(item, successCallback){
-    var query = "from:" + config.user + " " + item.link;
-    t.get('search/tweets', { q: query, count: 1 }, function(err, data, response) {
-        if(data != undefined && data.statuses != undefined && data.statuses.length === 0) {
+    if(item.time < new Date(new Date().getTime() - 60000 * 5)) {
+        return;
+    }
+
+    t.get('search/tweets', { q: "from:" + config.user + " " + item.link, count: 1 }, function (err, data, response) {
+        if (data != undefined && data.statuses != undefined && data.statuses.length === 0) {
             successCallback(item);
         }
     })
@@ -66,7 +87,9 @@ var tweetItem = function(item) {
 }
 
 var requestScrapes = function() {
+    console.log('requesting at ' + new Date())
     urls.forEach(function(url){
+        console.log('checking ' + url)
         request(url, function (error, response, body) {
             var items = getItems(body);
 
