@@ -69,7 +69,7 @@ var getItems = function(body) {
 }
 
 var checkItem = function(item, successCallback){
-    if(item.time < new Date(new Date().getTime() - 60000 * 5)) {
+    if(item.time < new Date(new Date().getTime() - 60000 * config.expiration_timeout)) {
         return;
     }
 
