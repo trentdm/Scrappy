@@ -11,7 +11,9 @@ var t = new twit({
     access_token_secret: config.access_token_secret
 });
 
-var url = config.base_path + '?nid=231&cat=186&category=184&pid=0&o_facetSelected=false';
+var urls = [
+    config.base_path + '?nid=231&cat=186&category=184&pid=0&o_facetSelected=false'
+];
 
 var getItems = function(body) {
     var $ = cheerio.load(body);
@@ -64,11 +66,13 @@ var tweetItem = function(item) {
 }
 
 var requestScrapes = function() {
-    request(url, function (error, response, body) {
-        var items = getItems(body);
+    urls.forEach(function(url){
+        request(url, function (error, response, body) {
+            var items = getItems(body);
 
-        items.forEach(function (item) {
-            checkItem(item, tweetItem);
+            items.forEach(function (item) {
+                checkItem(item, tweetItem);
+            });
         });
     });
 }
