@@ -13,7 +13,7 @@ var t = new twit({
 
 var urls = [
     config.base_path + '?nid=231&cat=186&category=184&pid=0&o_facetSelected=false',
-//    config.base_path + 'index.php?nid=231&nocache=1&search=crate+and+barrel&zip=&distance=&min_price=&max_price=&type=&x=0&y=0'
+    config.base_path + 'index.php?nid=231&nocache=1&search=crate+and+barrel&zip=&distance=&min_price=&max_price=&type=&x=0&y=0'
 ];
 
 var getItems = function(body) {
@@ -82,7 +82,10 @@ var checkItem = function(item, successCallback){
 
 var tweetItem = function(item) {
     t.post('statuses/update', { status: item.tweet }, function(err, data, response) {
-        console.log('status: ' + response.statusCode + '. updated: ' + data.text)
+        if(response.statusCode === 200)
+            console.log('status: ' + response.statusCode + '. updated: ' + data.text)
+        else
+            console.log('status: ' + response.statusCode + '. update error: ' + err)
     });
 }
 
