@@ -49,7 +49,7 @@ var getItems = function(body) {
         });
 
         $(this).find('.priceBox').each(function() {
-            var event = $(this).text().trim().replace(/\s\s+/g, ',').replace('$', '');
+            var event = $(this).text().trim().replace(/\s\s+/g, ',').replace('$', '').replace(',', '');
             var price = parseFloat(event) / 100
             item.price = isNaN(price) ? 0 : price;
         });
@@ -77,7 +77,7 @@ var checkItem = function(item, successCallback){
 
 var tweetItem = function(item) {
     t.post('statuses/update', { status: item.tweet }, function(err, data, response) {
-        if(response.statusCode === 200)
+        if(response != undefined && response.statusCode === 200)
             console.log('status: ' + response.statusCode + '. updated: ' + data.text)
         else
             console.log('status: ' + response.statusCode + '. update error: ' + err)
