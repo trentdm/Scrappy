@@ -1,5 +1,9 @@
 {
-    "base_path": "website basepath",
+    "urls": [
+        "http://url.com/something/id1",
+        "http://url.com/something/id2"
+    ],
+    "expiration_timeout": "60",
     "user": "your twitter user",
     "consumer_key": "twitter consumer key",
     "consumer_secret": "twitter consumer secret",
