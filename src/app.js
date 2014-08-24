@@ -89,11 +89,16 @@ var requestScrapes = function() {
     config.urls.forEach(function(url){
         console.log('checking ' + url)
         request(url, function (error, response, body) {
-            var items = getItems(body);
+            if(error == undefined && response.statusCode === 200) {
+                var items = getItems(body);
 
-            items.forEach(function (item) {
-                checkItem(item, tweetItem);
-            });
+                items.forEach(function (item) {
+                    checkItem(item, tweetItem);
+                });
+            }
+            else{
+                console.log("error: " + error)
+            }
         });
     });
 }
